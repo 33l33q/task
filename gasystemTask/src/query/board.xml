@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+                  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ldb.task.dao.BoardDao">
+
+	<select id="selectBoard" resultType="bvo">
+		select 	A.lnum			lnum,  --채번
+				A.ltitle		ltitle, --제목
+				A.linsertdate	linsertdate	 --작성일
+		From 	ldb_task_board A
+	</select>
+	
+	<!-- 게시글 채번 -->
+	<select id="cheabunBoard" resultType="bvo">
+		SELECT  /*+ INDEX_DESC(SYS_C0011922)*/
+		        LPAD(NVL(MAX(SUBSTR(A.lnum,-4)),0)+1,'4','0')  lnum
+		FROM    ldb_task_board  A 
+	</select>
+	
+	<insert	id="insertBoard" parameterType="bvo">
+		insert into ldb_task_board(
+									lnum,
+									lid,
+									lpw,
+									ltitle,
+									lcontent,
+									limage,
+									linsertdate,
+									ldeleteyn
+		)values(
+									#{lnum, jdbcType=VARCHAR},
+									#{lid, jdbcType=VARCHAR},
+									#{lpw, jdbcType=VARCHAR},
+									#{ltitle, jdbcType=VARCHAR},
+									#{lcontent, jdbcType=VARCHAR},
+									#{limage, jdbcType=VARCHAR},
+									TO_CHAR(SYSDATE,'YYYYMMDD'),
+									'Y'
+		)
+	</insert>
+
+
+</mapper>
