@@ -4,11 +4,20 @@
 
 <mapper namespace="ldb.task.dao.BoardDao">
 
+	<!-- 전체 출력 -->
 	<select id="selectBoard" resultType="bvo">
-		select 	A.lnum			lnum,  --채번
-				A.ltitle		ltitle, --제목
-				A.linsertdate	linsertdate	 --작성일
-		From 	ldb_task_board A
+		select rownum,
+			 	B.*
+		from (		select 	A.lnum				lnum,  			--채번
+							A.ltitle			ltitle, 		--제목
+							A.linsertdate		linsertdate,	--작성일
+							A.lid				lid,			--작성자
+							A.lhitnum			lhitnum 		-- 조회수
+					From 	ldb_task_board A 
+					where	A.ldeleteyn		= 'Y'
+					order by A.lnum 							)	B
+		order by rownum DESC	
+		
 	</select>
 	
 	<!-- 게시글 채번 -->
@@ -18,6 +27,7 @@
 		FROM    ldb_task_board  A 
 	</select>
 	
+	<!-- 글작성 -->
 	<insert	id="insertBoard" parameterType="bvo">
 		insert into ldb_task_board(
 									lnum,
@@ -40,5 +50,56 @@
 		)
 	</insert>
 
+	<!--  조회수 증가 -->
+	<update id="updateHitnum" parameterType="bvo">
+		update 	ldb_task_board
+		set		lhitnum 	= lhitnum + 1
+		where	lnum 		= #{lnum, jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 게시글 상세보기 -->
+	<select id="searchBoard" resultType="bvo" parameterType="bvo">
+		select 	A.lnum				lnum,  			--채번
+				A.ltitle			ltitle, 		--제목
+				A.lid				lid,			--작성자
+				A.lpw				lpw,			--비밀번호
+				A.lcontent			lcontent,		--내용
+				A.limage			limage,			--이미지
+				A.linsertdate		linsertdate,	--작성일
+				A.lhitnum			lhitnum, 		--조회수
+				A.lnum				lnum
+		From 	ldb_task_board A 
+		where	A.ldeleteyn		= 'Y'
+		and 	A.lnum			= #{lnum, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 글 수정하기 -->
+	<update id="updateBoard" parameterType="bvo">
+		update 	ldb_task_board A
+		set		lpw			= #{lpw, jdbcType=VARCHAR},
+				ltitle		= #{ltitle, jdbcType=VARCHAR},
+				lcontent	= #{lcontent, jdbcType=VARCHAR},
+				limage		= #{limage, jdbcType=VARCHAR},
+				linsertdate	= to_char(sysdate,'yyyymmdd')
+		where 	ldeleteyn 	= 'Y'
+		and		lnum 		= #{lnum, jdbcType=VARCHAR}
+	
+	</update>
+	
+	
+	<!-- 글 삭제하기 -->
+	<update id="deleteBoard" parameterType="bvo">
+		update 	ldb_task_board A 
+		set		A.ldeleteyn		= 'N'
+		where	A.ldeleteyn		= 'Y'
+		and		A.lnum			= #{lnum, jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 비밀번호 확인하기 -->
+	<select id="checkPw" resultType="bvo" parameterType="bvo">
+		select 	A.lpw 		lpw
+		from 	ldb_task_board A
+		where 	A.lnum = #{lnum, jdbcType=VARCHAR} 
+	</select>
 
 </mapper>

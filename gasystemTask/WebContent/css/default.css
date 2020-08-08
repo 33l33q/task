@@ -1,0 +1,71 @@
+@CHARSET "UTF-8";
+
+body {
+	/*background-image:url("../image/abc.jpg");
+	background-repeat : no-repeat;
+	background-size : cover;
+	background-attachment : fixed;*/
+	/*margin:512px 0 0 512px;*/
+	background : white;
+	width:1280px;
+	height:500px;
+	font-family: "Noto Sans KR", sans-serif;
+}
+
+.container {
+	/*width:1000px;
+	border : 1px solid red;*/
+	margin:3px;
+	margin:0 auto;
+}
+
+.table {
+	padding:0 15px 0 15px;
+	width:900px;
+	height:auto;
+/*	border-top:3px solid #ddd;
+	border-bottom:3px solid #ddd; */
+	margin:0 auto;
+	border = 3px solid #ddd;
+}
+
+.table_size {
+	min-height:500px;
+	width:90%;
+	margin:0 auto;
+}
+
+.table th {
+	padding:9px;
+	text-align:center;
+}
+
+.table tbody td {
+	width:900px;
+	padding:8px;
+	border-top:1px solid #ddd;
+}
+
+but {
+	font-family: 'Noto Sans KR', sans-serif;
+	background-color: rgb(29,79,137);
+	border: none;
+	color:#fff;
+	padding: 6px 8px 6px 8px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 12px;
+	margin: 2px;
+	cursor: pointer;
+}
+
+.table {
+	padding:0 15px 0 15px;
+	width:80%;
+	/*width:900px;*/
+	height:auto;
+	border-top:3px solid #ddd;
+	border-bottom:3px solid #ddd;
+	margin:0 auto;
+}

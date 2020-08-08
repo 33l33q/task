@@ -5,6 +5,9 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<title>글작성</title>
+		
+		<link rel="stylesheet" type="text/css" href="/css/default.css"/>
+		
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 		<script type="text/javascript" src="../webedit/dist/js/service/HuskyEZCreator.js" charset="utf-8"></script>
 		<script type="text/javascript">
@@ -55,13 +58,13 @@
 					alert("제목을 입력하세요");
 					$("#ltitle").focus();
 					return false;
-					}
+				}
 				
 				if(!$("#lid").val()) {
 					alert("이름을 입력하세요");
 					$("#lid").focus();
 					return false;
-					}
+				}
 				
 				//비밀번호 일치 여부 확인하기
 				var lpwVal = $("#lpw").val();
@@ -73,7 +76,7 @@
 					alert("비밀번호를 입력하세요.");
 					$("#lpw").focus();
 					return false;
-					}
+				}
 				
 				if(lpwVal != reLpwVal){
 					alert("비밀번호를 확인하세요.");
@@ -93,15 +96,14 @@
 					
 					oEditors.getById["lcontent"].exec("UPDATE_CONTENTS_FIELD", []);
 					$("#insertForm").submit();
-					
-			
-					$("#insertForm").attr({
-						"method":"POST",
-						"action":"../board/insertBoard.ldb"
-					});
-					
-					$("#insertForm").submit();
 				}
+				
+				$("#insertForm").attr({
+					"method":"POST",
+					"action":"../board/insertBoard.ldb"
+				});
+				
+				$("#insertForm").submit();
 			});
 			
 			function getTextLength(str){
@@ -142,7 +144,7 @@
 	</head>
 	<body>
 		<div class ="contaner">
-			<div id="bTit"><h2>글작성</h2></div>
+			<div id="bTit" align="center"><h2>글작성</h2></div>
 			<div align="center">
 				<form id="insertForm" name="insertForm" enctype="multipart/form-data">
 					<table id="wirteForm">
@@ -166,12 +168,11 @@
 						</tr>
 						<tr>
 							<td ><b>이미지</b></td>
-							<td colspan="3"><input type="file" name="limage" id="limage"></td>
+							<td colspan="3"><input type="file" name="limage" id="limage"><input type="reset" class ="but" value="취소"></td></td>
 						</tr>
 					</table>
 					<div align="right">
 						<input type="button" value="저장"  class="but" id="insertBoard" name="insertBoard">
- 						
 					</div>
 				</form>
 			</div>

@@ -15,7 +15,7 @@ public abstract class ChaebunUtil {
 
 		logger.info("(log)chaebun util¡¯¿‘");
 		Date d = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("yymmdd");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
 		String date = sdf.format(d);
 		String chaebun = "";
 		

@@ -12,6 +12,15 @@ public class BoardVO {
 	private	String	ldeleteyn;
 	private	String	lhitnum;
 	
+	//페이징을 위한 변수
+	private String rownum;
+	
+	public String getRownum() {
+		return rownum;
+	}
+	public void setRownum(String rownum) {
+		this.rownum = rownum;
+	}
 	public String getLnum() {
 		return lnum;
 	}

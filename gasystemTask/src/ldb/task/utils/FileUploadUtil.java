@@ -22,14 +22,12 @@ public class FileUploadUtil {
 		
 		try{
 			
-			logger.info("오류1");
 			 m = new MultipartRequest(	request, 
 					 					filePath, 
 					 					SIZE_LIMIT, 
 					 					"UTF-8", 
 					 					new FileName());
 			 
-			 logger.info("오류2");
 			 result = true;
 			 
 		}catch(Exception e){
