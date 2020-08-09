@@ -6,24 +6,47 @@
 
 	<!-- 전체 출력 -->
 	<select id="selectBoard" resultType="bvo">
-		select rownum,
-			 	B.*
-		from (		select 	A.lnum				lnum,  			--채번
-							A.ltitle			ltitle, 		--제목
-							A.linsertdate		linsertdate,	--작성일
-							A.lid				lid,			--작성자
-							A.lhitnum			lhitnum 		-- 조회수
-					From 	ldb_task_board A 
-					where	A.ldeleteyn		= 'Y'
-					order by A.lnum 							)	B
-		order by rownum DESC	
+		select *
+		from( 	select  C.*,
+						ceil(row_number() over(order by rownum)/#{pageSize, jdbcType=VARCHAR}) pageNo,
+						count(lnum) over() totalCount
+				from(	select  rownum,
+							 	B.*
+						from (		select 	distinct A.lnum			lnum,  			--채번
+											A.ltitle				ltitle, 		--제목
+											A.linsertdate			linsertdate,	--작성일
+											A.lid					lid,			--작성자
+											A.lhitnum				lhitnum, 		--조회수
+											A.lcontent				lcontent, 		--글내용
+											nvl((	select 		count(D.lreNum)
+													from		ldb_task_reply D
+													where		D.lreDeleteyn	= 'Y'
+													group by 	lnum
+													having		A.lnum = D.lnum), 0)	cntReply	--댓글수
+									from 	ldb_task_board A 
+									where	A.ldeleteYN		= 'Y'
+									<if test = "keyword != null and keyword != ''">
+									  	<if test="keyword=='ltitle'">
+						                   <![CDATA[AND A.ltitle LIKE '%'||#{search, jdbcType=VARCHAR}||'%']]>            
+						                 </if>
+						                 <if test="keyword=='lid'">
+						                    <![CDATA[AND A.lid LIKE '%'||#{search, jdbcType=VARCHAR}||'%']]>   
+						                 </if>
+				                 		 <if test="keyword=='lcontent'">
+										    <![CDATA[AND A.lcontent LIKE '%'||#{search, jdbcType=VARCHAR}||'%']]>   
+										 </if>
+									</if> 
+									order by A.lnum 							)	B
+						order by rownum DESC	
+				) C
+		)
+		where	pageNo = #{curPage, jdbcType=VARCHAR}
 		
 	</select>
 	
 	<!-- 게시글 채번 -->
 	<select id="cheabunBoard" resultType="bvo">
-		SELECT  /*+ INDEX_DESC(SYS_C0011922)*/
-		        LPAD(NVL(MAX(SUBSTR(A.lnum,-4)),0)+1,'4','0')  lnum
+		SELECT  LPAD(NVL(MAX(SUBSTR(A.lnum,-4)),0)+1,'4','0')  lnum
 		FROM    ldb_task_board  A 
 	</select>
 	
@@ -37,7 +60,7 @@
 									lcontent,
 									limage,
 									linsertdate,
-									ldeleteyn
+									ldeleteYN
 		)values(
 									#{lnum, jdbcType=VARCHAR},
 									#{lid, jdbcType=VARCHAR},
@@ -59,18 +82,22 @@
 	
 	<!-- 게시글 상세보기 -->
 	<select id="searchBoard" resultType="bvo" parameterType="bvo">
-		select 	A.lnum				lnum,  			--채번
-				A.ltitle			ltitle, 		--제목
-				A.lid				lid,			--작성자
-				A.lpw				lpw,			--비밀번호
-				A.lcontent			lcontent,		--내용
-				A.limage			limage,			--이미지
-				A.linsertdate		linsertdate,	--작성일
-				A.lhitnum			lhitnum, 		--조회수
-				A.lnum				lnum
-		From 	ldb_task_board A 
-		where	A.ldeleteyn		= 'Y'
-		and 	A.lnum			= #{lnum, jdbcType=VARCHAR}
+		select B.* 
+		from (	select    A.lnum			lnum,  			--채번
+	                      A.ltitle			ltitle, 		--제목
+	                      A.lid				lid,			--작성자
+	                      A.lpw				lpw,			--비밀번호
+	                      A.lcontent		lcontent,		--내용
+	                      A.limage			limage,			--이미지
+	                      A.linsertdate		linsertdate,	--작성일
+	                      A.lhitnum			lhitnum, 		--조회수
+			              lead(A.lnum,1) over(order by A.lnum) nextLnum,	
+			              lag(A.lnum,1) over(order by A.lnum) preLnum,		
+			              lead(A.ltitle,1) over(order by A.lnum) nextLtitle,
+			              lag(A.ltitle,1) over(order by A.lnum) preLtitle
+				from    ldb_task_board A
+			    where   ldeleteYN = 'Y') B
+		 where  B.lnum = #{lnum, jdbcType=VARCHAR}
 	</select>
 	
 	<!-- 글 수정하기 -->
@@ -80,8 +107,8 @@
 				ltitle		= #{ltitle, jdbcType=VARCHAR},
 				lcontent	= #{lcontent, jdbcType=VARCHAR},
 				limage		= #{limage, jdbcType=VARCHAR},
-				linsertdate	= to_char(sysdate,'yyyymmdd')
-		where 	ldeleteyn 	= 'Y'
+				lupdatedate	= to_char(sysdate,'yyyymmdd')
+		where 	ldeleteYN 	= 'Y'
 		and		lnum 		= #{lnum, jdbcType=VARCHAR}
 	
 	</update>
@@ -90,9 +117,10 @@
 	<!-- 글 삭제하기 -->
 	<update id="deleteBoard" parameterType="bvo">
 		update 	ldb_task_board A 
-		set		A.ldeleteyn		= 'N'
-		where	A.ldeleteyn		= 'Y'
-		and		A.lnum			= #{lnum, jdbcType=VARCHAR}
+		set		A.ldeleteYN	= 'N'.
+				lupdatedate	= to_char(sysdate,'yyyymmdd')
+		where	A.ldeleteYN	= 'Y'
+		and		A.lnum		= #{lnum, jdbcType=VARCHAR}
 	</update>
 	
 	<!-- 비밀번호 확인하기 -->
@@ -101,5 +129,76 @@
 		from 	ldb_task_board A
 		where 	A.lnum = #{lnum, jdbcType=VARCHAR} 
 	</select>
+	
+	<!-- ======================== 댓글쿼리 ======================== -->
+	
+	<!-- 댓글 채번 -->
+	<select id="cheabunReply" resultType="rvo">
+		select  LPAD(NVL(MAX(SUBSTR(A.lreNum,-4)),0)+1,'4','0') lreNum
+		from  ldb_task_reply  A 
+	</select>
+	
+	<!-- 댓글 등록하기 -->
+	<insert id="insertReply" parameterType="rvo">
+		insert into ldb_task_reply (
+										lreNum,		--댓글채번
+										lnum,		--글채번	
+										lreId,		--댓글작성자
+										lrePw,		--댓글비밀번호
+										lreContent,	--댓글내용
+										lreInsertdate,	--작성일
+										lreDeleteyn		--삭제플래그
+		)values(						
+										#{lreNum, jdbcType=VARCHAR},
+										#{lnum, jdbcType=VARCHAR},
+										#{lreId, jdbcType=VARCHAR},
+										#{lrePw, jdbcType=VARCHAR},
+										#{lreContent, jdbcType=VARCHAR},
+										to_char(sysdate,'YYYYMMDD'),
+										'Y'
+		)	
+	</insert>
+	
+	<!-- 댓글 목록 출력 -->
+	<select id="selectReply" parameterType="rvo" resultType="rvo">
+		select 	B.*,
+				rownum
+		from 	(		select	A.lreNum		lreNum,
+								A.lnum			lnum,
+								A.lreId			lreId,
+								A.lrePw			lrePw,
+								A.lreContent	lreContent,
+								A.lreInsertdate	lreInsertdate
+						from	ldb_task_reply A
+						where	A.lreDeleteyn	= 'Y'
+						and		A.lnum			= #{lnum, jdbcType=VARCHAR}
+						order by A.lreNum asc					) B
+		order by rownum 
+	
+	</select>
+	
+	<!-- 댓글 수정 -->
+	<update id="updateReply" parameterType="rvo">
+		update 	ldb_task_reply A 
+		set		A.lreContent	= #{lreContent, jdbcType=VARCHAR},
+				A.lreUpdatedate	= to_char(sysdate,'YYYYMMDD')
+		where	A.lreDeleteyn	= 'Y'
+		and		A.lreNum		= #{lreNum, jdbcType=VARCHAR}
+		and		A.lnum			= #{lnum, jdbcType=VARCHAR}
+		and		A.lreId			= #{lreId, jdbcType=VARCHAR}
+		and		A.lrePw			= #{lrePw, jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 댓글 삭제 -->
+	<update id="deleteReply" parameterType="rvo">
+		update 	ldb_task_reply A 
+		set		A.lreDeleteyn	= 'N',
+				A.lreUpdatedate	= to_char(sysdate,'YYYYMMDD')
+		where	A.lreDeleteyn	= 'Y'
+		and		A.lreNum		= #{lreNum, jdbcType=VARCHAR}
+		and		A.lreId			= #{lreId, jdbcType=VARCHAR}
+		and		A.lrePw			= #{lrePw, jdbcType=VARCHAR}
+	</update>
+	
 
 </mapper>

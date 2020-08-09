@@ -8,18 +8,16 @@ import javax.servlet.http.HttpServletRequest;
 import ldb.task.service.BoardService;
 import ldb.task.utils.ChaebunUtil;
 import ldb.task.utils.FileUploadUtil;
+import ldb.task.utils.Paging;
 import ldb.task.utils.PrintVOUtil;
 import ldb.task.vo.BoardVO;
+import ldb.task.vo.ReplyVO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,22 +38,41 @@ public class BoardController {
 	final static String ABSTRACT_PATH =  "C://Users//BEE//Desktop//gasystem_task//gasystemTask//WebContent//image";
 	final static String RELATIVE_PATH = "image//";
 	final static String BOARD_GUBUN = "B";
-	
+	final static String REPLY_GUBUN = "R";
 	
 	//전체 글 출력
 	@RequestMapping("/selectBoard")
-	public String selectBoard(@ModelAttribute BoardVO bvo, Model model){
+	public String selectBoard(@ModelAttribute BoardVO bvo, Model model, HttpServletRequest request){
 		logger.info("(log)BoardController.selectBoard 시작 >>> ");
+		/*-----------페이징----------*/
+		String cPage = request.getParameter("curPage");
+		String pageCtrl=request.getParameter("pageCtrl");
+	      
+		String keyword = request.getParameter("keyword");//검색 인덱스
+		bvo.setKeyword(keyword);
+		String search = request.getParameter("search");//검색 내용
+		bvo.setSearch(search);
+		
+		Paging.setPage(bvo, cPage, pageCtrl);
+	    
+		int totalCnt = 0;
+		
 		List<BoardVO> selectBoard = null;
 		selectBoard = boardService.selectBoard(bvo);
+		
+		logger.info("갯수 출력하기 >>> " + selectBoard.get(0).getCntReply());
+		
+		if(selectBoard.size() != 0){
+            totalCnt=selectBoard.get(0).getTotalCount();//쿼리 조회한 리스트의 0번 인덱스에 담긴 totalCount값을 받아서 
+            bvo.setTotalCount(totalCnt);//vo에 담는다
+		}
 		
 		model.addAttribute("boardAllList",selectBoard);
 		model.addAttribute("bvo",bvo);
 		
-		String url = "selectBoard";
+		String url = "board/selectBoard";
 		
 		logger.info("(log)BoardController.selectBoard 종료 >>> ");
-		 	
 		return url;
 	}
 	
@@ -113,9 +130,9 @@ public class BoardController {
 		result = boardService.insertBoard(bvo);
 		
 		if(result){
-			url = "searchBoard.ldb?lnum="+bvo.getLnum();
+			url = "board/searchBoard.ldb?lnum="+bvo.getLnum();
 		}else{
-			url = "selectBoard";
+			url = "board/selectBoard";
 		}
 
 		return "redirect:" + url ;
@@ -141,7 +158,7 @@ public class BoardController {
 			searchList = boardService.searchBoard(bvo);
 			if(searchList.size() != 0){
 				model.addAttribute("searchList", searchList);
-				url = "searchBoard";
+				url = "board/searchBoard";
 			}else{
 				url = "redirect:selectBoard.ldb";
 			}
@@ -150,6 +167,43 @@ public class BoardController {
 	
 	}
 	
+	
+	//수정,삭제 권한 확인하기
+	@RequestMapping(value="/GET/{lnum}.ldb",  method = {RequestMethod.PUT, RequestMethod.PATCH})
+	@ResponseBody
+	public ResponseEntity<String> checkPw(@PathVariable("lnum") String lnum, @RequestBody BoardVO bvo){
+		logger.info("(log)BoardController.checkPw 비밀번호 확인 >>> ");
+		
+		String lpw = "";
+		String checkLpw = "";
+		ResponseEntity<String> entity = null;
+		
+		lpw = bvo.getLpw();
+		bvo.setLpw(lpw);
+		logger.info("비밀번호 비교하기" + bvo.getLpw());
+		
+		List<BoardVO> aList = null;
+		aList = boardService.checkPw(bvo);
+		
+		checkLpw = aList.get(0).getLpw();
+		
+		if(lpw.equals(checkLpw)){
+			logger.info("(log) 비밀번호가,,,같다면,,,?>>> ");
+			try{
+				entity = new ResponseEntity<>("SUCCESS", HttpStatus.OK);
+			}catch(Exception e){
+				entity = new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
+				logger.info(e);
+			}
+		}else{
+			entity = new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
+		}
+		
+		logger.info("(log)BoardController.checkPw 비밀번호 확인 종료 >>> ");
+		return entity;
+	}
+	
+	//글삭제하기
 	@RequestMapping("/deleteBoard")
 	public String deleteBoard(@ModelAttribute BoardVO bvo, Model model, HttpServletRequest request){
 		logger.info("(log)BoardController.deleteBoard 진입 >>> ");
@@ -166,9 +220,9 @@ public class BoardController {
 		result = boardService.deleteBoard(bvo);
 		
 		if(result){
-			url = "redirect:selectBoard.ldb";
+			url = "redirect:board/selectBoard.ldb";
 		}else{
-			url = "redirect:searchBoard.ldb?lnum=" + lnum;
+			url = "redirect:board/searchBoard.ldb?lnum=" + lnum;
 		}
 		
 		logger.info("(log)BoardController.deleteBoard 종료 >> ");
@@ -176,6 +230,7 @@ public class BoardController {
 		return url;
 	}
 	
+	//수정페이지로 이동하기
 	@RequestMapping("/moveToUpdate")
 	public String moveToUpdate(@ModelAttribute BoardVO bvo, Model model, HttpServletRequest request){
 		logger.info("(log)수정페이지로 이동하기~~~ >>> ");
@@ -246,48 +301,121 @@ public class BoardController {
 		result = boardService.updateBoard(bvo);
 		
 		if(result){
-			url = "searchBoard.ldb?lnum="+lnum;
+			url = "board/searchBoard.ldb?lnum="+lnum;
 		}else{
-			url = "selectBoard.ldb";
+			url = "board/selectBoard.ldb";
 		}
 
 		logger.info("(log)BoardController.updateBoard 종료 >>> ");
 		return "redirect:" + url ;
 	}
+
+	/****************************************************************************/
 	
-	//수정,삭제 권한 확인하기
-	@RequestMapping(value="/GET/{lnum}.ldb",  method = {RequestMethod.PUT, RequestMethod.PATCH})
-	@ResponseBody
-	public ResponseEntity<String> checkPw(@PathVariable("lnum") String lnum, @RequestBody BoardVO bvo){
-		logger.info("(log)BoardController.checkPw 비밀번호 확인 >>> ");
+	//댓글 입력
+	@RequestMapping("/insertReply")
+	public ResponseEntity<String> insertReply(@RequestBody ReplyVO rvo){
+		logger.info("(log)BoardController.insertReply 진입 >>> ");
 		
-		String lpw = "";
-		String checkLpw = "";
 		ResponseEntity<String> entity = null;
+		String lreNum = "";
+		boolean result = false;
 		
-		lpw = bvo.getLpw();
-		bvo.setLpw(lpw);
-		logger.info("비밀번호 비교하기" + bvo.getLpw());
+		List<ReplyVO> aList = null;
+		aList = boardService.cheabunReply(rvo);
 		
-		List<BoardVO> aList = null;
-		aList = boardService.checkPw(bvo);
+		lreNum = ChaebunUtil.chaebunNum(aList.get(0).getLreNum(), REPLY_GUBUN);
+		logger.info("(log)댓글번호 확인 lreNum >>> " + lreNum);
 		
-		checkLpw = aList.get(0).getLpw();
+		rvo.setLreNum(lreNum);
 		
-		if(lpw.equals(checkLpw)){
-			logger.info("(log) 비밀번호가,,,같다면,,,?>>> ");
-			try{
-				entity = new ResponseEntity<>("SUCCESS", HttpStatus.OK);
-			}catch(Exception e){
-				entity = new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
-				logger.info(e);
+		try{
+			result = boardService.insertReply(rvo);
+			if(result){
+				entity = new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
+			}else{
+				entity = new ResponseEntity<String>("FAIL", HttpStatus.OK);
 			}
-		}else{
-			entity = new ResponseEntity<>("FAIL", HttpStatus.BAD_REQUEST);
+			
+		}catch(Exception e){
+			
+			
+			entity = new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		logger.info("(log)BoardController.insertReply 종료 >>> ");
+		return entity;
+	}//댓글 입력 종료
+	
+	
+	//댓글 목록
+	@RequestMapping(value="/all/{lnum}.ldb")
+	@ResponseBody
+	public ResponseEntity<List<ReplyVO>> selectReply(@PathVariable("lnum") String lnum, ReplyVO rvo ){
+		logger.info("(log)BoardController.selectReply 진입 >>> ");
+		ResponseEntity<List<ReplyVO>> entity = null;
+		rvo.setLnum(lnum);
+		
+		List<ReplyVO> sList = null;
+		
+		try{
+			sList = boardService.selectReply(rvo);
+			entity = new ResponseEntity<>(sList, HttpStatus.OK);
+			logger.info("(log)BoardController.selectReply 전송성공 >>> ");
+			
+		}catch(Exception e){
+			entity = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		
-		logger.info("(log)BoardController.checkPw 비밀번호 확인 종료 >>> ");
+		logger.info("(log)BoardController.selectReply 종료 >>> ");
 		return entity;
-	}
+	}//댓글 목록 출력하기
+	
+	
+	@RequestMapping("/update/{lreNum}.ldb")
+	public ResponseEntity<String> updateReply(@PathVariable("lreNum") String lreNum,  @RequestBody ReplyVO rvo){
+		logger.info("(log)BoardController.updateReply 진입 >>> ");
+		ResponseEntity<String> entity = null;
+		
+		boolean result = false;
+		
+		try{
+			result = boardService.updateReply(rvo);
+			if(result){
+				entity = new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
+			}else{
+				entity = new ResponseEntity<String>("FAIL", HttpStatus.OK);
+			}
+			
+		}catch(Exception e){
+			entity = new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		
+		logger.info("(log)BoardController.updateReply 종료 >>> ");
+		return entity;
+	}//댓글 수정
+	
+	@RequestMapping("/delete/{lreNum}.ldb")
+	public ResponseEntity<String> deleteReply(@PathVariable("lreNum") String lreNum,  @RequestBody ReplyVO rvo){
+		logger.info("(log)BoardController.deleteReply 진입 >>> ");
+		ResponseEntity<String> entity = null;
+		
+		boolean result = false;
+		
+		try{
+			result = boardService.deleteReply(rvo);
+			if(result){
+				entity = new ResponseEntity<String>("SUCCESS", HttpStatus.OK);
+			}else{
+				entity = new ResponseEntity<String>("FAIL", HttpStatus.OK);
+			}
+			
+		}catch(Exception e){
+			entity = new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		
+		logger.info("(log)BoardController.deleteReply 종료 >>> ");
+		return entity;
+	}//댓글 수정	
+
 	
 }//end of controller

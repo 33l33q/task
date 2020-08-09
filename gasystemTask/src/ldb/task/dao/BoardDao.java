@@ -3,6 +3,7 @@ package ldb.task.dao;
 import java.util.List;
 
 import ldb.task.vo.BoardVO;
+import ldb.task.vo.ReplyVO;
 
 public interface BoardDao {
 
@@ -18,4 +19,18 @@ public interface BoardDao {
 	public int updateBoard(BoardVO bvo);
 	
 	public List<BoardVO> checkPw(BoardVO bvo);
+	
+	/**************** ´ñ±Û *****************/
+	
+	public List<ReplyVO> selectReply(ReplyVO rvo);
+	
+	public int insertReply(ReplyVO rvo);
+	public List<ReplyVO> cheabunReply(ReplyVO rvo);
+
+	public List<ReplyVO> searchReply(ReplyVO rvo);
+		
+	public int updateReply(ReplyVO rvo);
+	public int deleteReply(ReplyVO rvo);
+
+
 }

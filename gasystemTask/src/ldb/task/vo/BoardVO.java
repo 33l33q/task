@@ -1,6 +1,6 @@
 package ldb.task.vo;
 
-public class BoardVO {
+public class BoardVO extends UtilVO {
 	private	String	lnum;
 	private	String	lid;
 	private	String	lpw;
@@ -9,14 +9,55 @@ public class BoardVO {
 	private	String	limage;
 	private	String	linsertdate;
 	private	String	lupdatedate;
-	private	String	ldeleteyn;
+	private	String	ldeleteYN;
 	private	String	lhitnum;
 	
 	//페이징을 위한 변수
 	private String rownum;
+
+	//제목 미리보기
+	private String preLnum;
+	private String preLtitle;
+	private	String nextLnum;
+	private String nextLtitle;
 	
+
+	//댓글 갯수
+	private String cntReply;
+
+	public String getCntReply() {
+		return cntReply;
+	}
+	public void setCntReply(String cntReply) {
+		this.cntReply = cntReply;
+	}
 	public String getRownum() {
 		return rownum;
+	}
+	public String getPreLnum() {
+		return preLnum;
+	}
+	
+	public void setPreLnum(String preLnum) {
+		this.preLnum = preLnum;
+	}
+	public String getPreLtitle() {
+		return preLtitle;
+	}
+	public void setPreLtitle(String preLtitle) {
+		this.preLtitle = preLtitle;
+	}
+	public String getNextLnum() {
+		return nextLnum;
+	}
+	public void setNextLnum(String nextLnum) {
+		this.nextLnum = nextLnum;
+	}
+	public String getNextLtitle() {
+		return nextLtitle;
+	}
+	public void setNextLtitle(String nextLtitle) {
+		this.nextLtitle = nextLtitle;
 	}
 	public void setRownum(String rownum) {
 		this.rownum = rownum;
@@ -69,11 +110,11 @@ public class BoardVO {
 	public void setLupdatedate(String lupdatedate) {
 		this.lupdatedate = lupdatedate;
 	}
-	public String getLdeleteyn() {
-		return ldeleteyn;
+	public String getLdeleteYN() {
+		return ldeleteYN;
 	}
-	public void setLdeleteyn(String ldeleteyn) {
-		this.ldeleteyn = ldeleteyn;
+	public void setLdeleteYN(String ldeleteYN) {
+		this.ldeleteYN = ldeleteYN;
 	}
 	public String getLhitnum() {
 		return lhitnum;

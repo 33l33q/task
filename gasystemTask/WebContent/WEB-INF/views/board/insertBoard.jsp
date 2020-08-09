@@ -1,13 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="ldb.task.controller.BoardController"%>
-<%@ page import="ldb.task.vo.BoardVO"%>
-<%@ page import="java.util.ArrayList" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<title>글 수정</title>
+		<title>글작성</title>
 		
 		<link rel="stylesheet" type="text/css" href="/css/default.css"/>
 		
@@ -37,23 +34,23 @@
 			});
 			
 			//DB에 설정한 최대크기에 맞춰 글내용 글자수 제한
-			$('.lcontent').keyup(function(){
+			$(".lcontent").keyup(function(){
 				cut_2000(this);
 			});
 			
 			//DB에 설정한 최대크기에 맞춰 제목 글자수 제한
-			$('.ltitle').keyup(function(){
+			$(".ltitle").keyup(function(){
 				cut_100(this);
 			});
 			
-			//수정완료
-			$("#updateBut").click(function() {
+			$("#insertBoard").click(function() {
+
 				//필수값 validation
-		        var lcontent = oEditors.getById['lcontent'].getIR();
-		        var checkarr = ['<p>&nbsp;</p>','&nbsp;','<p><br></p>','<p></p>','<br>'];
+		        var lcontent = oEditors.getById["lcontent"].getIR();
+		        var checkarr = ["<p>&nbsp;</p>","&nbsp;","<p><br></p>","<p></p>","<br>"];
 		        if(jQuery.inArray(lcontent.toLowerCase(), checkarr) != -1){
 		            alert("내용을 입력해 주십시오.");
-		            oEditors.getById["lcontent"].exec('FOCUS');
+		            oEditors.getById["lcontent"].exec("FOCUS");
 		            return false;
 		        }
 
@@ -63,9 +60,17 @@
 					return false;
 				}
 				
+				if(!$("#lid").val()) {
+					alert("이름을 입력하세요");
+					$("#lid").focus();
+					return false;
+				}
+				
 				//비밀번호 일치 여부 확인하기
 				var lpwVal = $("#lpw").val();
 				var reLpwVal = $("#reLpw").val();
+				
+				alert(reLpwVal + " : " + lpwVal);
 				
 				if(!lpwVal){
 					alert("비밀번호를 입력하세요.");
@@ -81,25 +86,24 @@
 
 				
 				else{
-					var ext = $('#limage').val().split('.').pop().toLowerCase();
-					if(ext){
-						if(jQuery.inArray(ext,['gif','png','jpg','jpeg']) == -1 ) {
-	                        alert('gif,png,jpg,jpeg 사진만 업로드 할 수 있습니다');
+					var ext1 = $("#limage").val().split(".").pop().toLowerCase();
+					if(ext1){
+						if(jQuery.inArray(ext1,["gif","png","jpg","jpeg"]) == -1 ) {
+	                        alert("gif,png,jpg,jpeg 사진만 업로드 할 수 있습니다");
 							return false;
 						}
 					}
 					
 					oEditors.getById["lcontent"].exec("UPDATE_CONTENTS_FIELD", []);
-					$("#updateForm").submit();
+					$("#insertForm").submit();
 				}
 				
-				$("#updateForm").attr({
+				$("#insertForm").attr({
 					"method":"POST",
-					"action":"/board/updateBoard.ldb"
+					"action":"../board/insertBoard.ldb"
 				});
 				
-				$("#updateForm").submit();
-				
+				$("#insertForm").submit();
 			});
 			
 			function getTextLength(str){
@@ -121,7 +125,7 @@
 					text = text.substring(0, leng);
 				}
 				$(obj).val(text);
-				$('.bytes').text(getTextLength(text));
+				$(".bytes").text(getTextLength(text));
 			}
 			
 			function cut_100(obj){
@@ -132,96 +136,43 @@
 					text = text.substring(0, leng);
 				}
 				$(obj).val(text);
-				$('.bytes').text(getTextLength(text));
+				$(".bytes").text(getTextLength(text));
 			}
-			
-			//삭제버튼 클릭시
-			$("#deleteBut").click(function(){
-
-				$("#updateForm").attr({
-					"method":"get",
-					"action":"/board/deleteBoard.ldb"
-				});
-				
-				$("#updateForm").submit();
-				
-			});
-			
-			//목록버튼 클릭시
-			$("#selectBut").click(function(){
-				 location.href="/board/selectBoard.ldb";
-			});
-			
 		});//end of jquery
 		
 		</script>
 	</head>
-<%
-		BoardVO bvo = new BoardVO();
-		
-		Object obj = request.getAttribute("searchList");
-		Object obj2 = request.getAttribute("lnum");
-		ArrayList<BoardVO> aList = (ArrayList<BoardVO>)obj;
-		String lnum = (String)obj2;
-
-		bvo = aList.get(0);
-		
-%>
 	<body>
 		<div class ="contaner">
-			<div id="bTit"><h2>글수정</h2></div>
+			<div id="bTit" align="center"><h2>글작성</h2></div>
 			<div align="center">
-				<form id="updateForm" name="updateForm" enctype="multipart/form-data">
-					<input type="hidden" id="lnum" name="lnum" value="<%=lnum %>">
-					<table>
+				<form id="insertForm" name="insertForm" enctype="multipart/form-data">
+					<table width="800px" id="wirteForm">
 						<tr>
 							<td><b>작성자</b></td>
-							<td colspan="3"><%=bvo.getLid() %></td>
+							<td colspan="3"><input type="text" name="lid" id="lid"></td>
 						</tr>
 						<tr>
 							<td><b>비밀번호</b></td>
-							<td><input type="password" name="lpw" id="lpw"  value=<%=bvo.getLpw() %>>
+							<td><input type="password" name="lpw" id="lpw">
 							<td><b>비밀번호 확인</b></td>
-							<td><input type="password" name="reLpw" id="reLpw" value=<%=bvo.getLpw() %>>
+							<td><input type="password" name="reLpw" id="reLpw">
 						</tr>
 						<tr>
 							<td><b>제목</b></td>
-							<td colspan="3"><input type="text" name="ltitle" id="ltitle" class="ltitle" size="50" value=<%=bvo.getLtitle() %>></td>
+							<td colspan="3"><input type="text" name="ltitle" id="ltitle" class="ltitle" size="50"></td>
 						</tr>
 						<tr>
 							<td><b>내용</b></td>
-							<td colspan="3"><textarea rows="16" cols="80" name="lcontent" id="lcontent" class="lcontent" value=<%=bvo.getLcontent() %>></textarea></td>
+							<td colspan="3"><textarea rows="16" cols="80" name="lcontent" id="lcontent" class="lcontent" style="width:100%; min-width:600px; height:30em;"></textarea></td>
 						</tr>
-<%
-						String limage = "";
-						limage = bvo.getLimage();
-						if(limage != null){
-%>
 						<tr>
 							<td ><b>이미지</b></td>
-							<td colspan="3">
-							<img src="../<%=limage%>" style="max-width:90%;">
-							<input type="file" name="limage" id="limage" value=<%=limage%>>
-							<input type="reset" class ="but" value="취소"></td>
+							<td colspan="3"><input type="file" name="limage" id="limage"><input type="reset" value="취소"></td></td>
 						</tr>
-<%
-						}else{
-%>
-
-						<tr>
-							<td ><b>이미지</b></td>
-							<td colspan="3">
-							<input type="file" name="limage" id="limage">
-							<input type="reset" class ="but" value="취소"></td>
-						</tr>
-<%
-						}
-%>
 					</table>
 					<div align="right">
-						<input type="button" value="수정완료"  class="but" id="updateBut" name="updateBut">
- 						<input type="button" value="삭제"  class="but" id="deleteBut" name="deleteBut">
- 						<input type="button" value="목록"  class="but" id="selectBut" name="selectBut">
+						<input type="button" value="저장"  class="but" id="insertBoard" name="insertBoard">
 					</div>
 				</form>
 			</div>

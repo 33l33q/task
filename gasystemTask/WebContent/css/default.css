@@ -1,15 +1,13 @@
 @CHARSET "UTF-8";
 
 body {
-	/*background-image:url("../image/abc.jpg");
-	background-repeat : no-repeat;
-	background-size : cover;
-	background-attachment : fixed;*/
-	/*margin:512px 0 0 512px;*/
+	background-attachment : fixed;
+	margin:0 auto;
 	background : white;
 	width:1280px;
 	height:500px;
 	font-family: "Noto Sans KR", sans-serif;
+	color : black;
 }
 
 .container {
@@ -20,13 +18,23 @@ body {
 }
 
 .table {
-	padding:0 15px 0 15px;
+	padding:1px;
 	width:900px;
 	height:auto;
 /*	border-top:3px solid #ddd;
 	border-bottom:3px solid #ddd; */
 	margin:0 auto;
-	border = 3px solid #ddd;
+	border: 3px solid #ddd;
+}
+
+.tableForm {
+	padding:1px;
+	width:900px;
+	height:auto;
+/*	border-top:3px solid #ddd;
+	border-bottom:3px solid #ddd; */
+	margin:0 auto;
+	border: 3px solid #ddd;
 }
 
 .table_size {
@@ -46,7 +54,7 @@ body {
 	border-top:1px solid #ddd;
 }
 
-but {
+.but {
 	font-family: 'Noto Sans KR', sans-serif;
 	background-color: rgb(29,79,137);
 	border: none;
@@ -61,11 +69,43 @@ but {
 }
 
 .table {
-	padding:0 15px 0 15px;
 	width:80%;
 	/*width:900px;*/
 	height:auto;
 	border-top:3px solid #ddd;
 	border-bottom:3px solid #ddd;
 	margin:0 auto;
+}
+
+.butIndex{
+	margin:0 auto;
+}
+
+
+.reply {
+	width:95%;	
+	margin:0 auto;
+	padding : 0;
+	
+	    list-style: none;
+    padding-left: 0px;
+}
+
+.reply_table {
+	width:90%;
+	border-top:3px solid #eeeeee;
+	border-bottom:3px solid #eeeeee;
+}
+
+.reply_table td {
+	padding:15px;
+}
+
+.comment_item {
+	padding:10px;
+	border-top:1px solid #eeeeee;
+}
+
+.acc{
+	color:#aaa;
 }

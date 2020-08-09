@@ -12,6 +12,7 @@
 	String message = (String)obj2;
 
 	BoardVO bvo = aList.get(0);
+	String lnum = bvo.getLnum();
 %>
 	<html>
 	<head>
@@ -50,10 +51,7 @@
 					$("#lpw").focus();
 					return false;
 				}
-				
 				checkPwDel(lnum, lpw);
-		
-				
 			});
 			
 			//전체목록으로 이동
@@ -64,17 +62,17 @@
 			//비밀번호 체크
 			function checkPwUp(lnum, lpw){
 	            $.ajax({
-	                url:'/board/GET/' + lnum + ".ldb",
-	                type:'put',
+	                url:"/board/GET/" + lnum + ".ldb",
+	                type:"put",
 	                headers:{
 	                      "Content-Type" : "application/json",
 	                      "X-HTTP-Method-Override" : "PUT"},
                     data:JSON.stringify({
 						                  	 lpw:lpw,
 						                  	 lnum:lnum}),
-	                dataType:'text',
+	                dataType:"text",
 	                success:function(result){
-	                       if(result == 'SUCCESS'){
+	                       if(result == "SUCCESS"){
 	                    	   alert("비밀번호 확인 성공");
                     	   $("#searchForm").attr({
            	                "method":"post",
@@ -83,12 +81,12 @@
 	           				$("#searchForm").submit();
 
 
-	                       }else if(result == 'FAIL'){
+	                       }else if(result == "FAIL"){
 	                    	   alert("수정할 권한이 없습니다.");
 	                       }
 	                },
 	                error : function(result){
-	                       if(result == 'FAIL'){
+	                       if(result == "FAIL"){
 	                    	   alert("수정할 권한이 없습니다.");
 	                       }else{
 	                    	   alert("오류발생")
@@ -100,18 +98,18 @@
 			//삭제 비밀번호 체크
 			function checkPwDel(lnum, lpw){
 	            $.ajax({
-	                url:'/board/GET/' +  lnum + ".ldb",
-	                type:'put',
+	                url:"/board/GET/" +  lnum + ".ldb",
+	                type:"put",
 	                headers:{
 	                      "Content-Type" : "application/json",
 	                      "X-HTTP-Method-Override" : "PUT"},
                     data:JSON.stringify({
 						                  	 lpw:lpw,
 						                  	 lnum:lnum}),
-	                dataType:'text',
+	                dataType:"text",
 	                success:function(result){
 	                       console.log("result: " + result);
-	                       if(result == 'SUCCESS'){
+	                       if(result == "SUCCESS"){
 	                    	   alert("비밀번호 확인 성공");
 	                    	   $("#searchForm").attr({
 		        	                "method":"post",
@@ -119,7 +117,7 @@
 	        					});
 	        				   $("#searchForm").submit();
 							
-	                       }else if(result == 'FAIL'){
+	                       }else if(result == "FAIL"){
                              alert("수정할 권한이 없습니다.");
                              return false;
 	                       }
@@ -127,16 +125,33 @@
                  });
 			}
 			
-		
+			//이전글로 이동
+			$(".movePre").click(function(){
+				var lnum = $(this).parents("tr").attr("data");
+				$("#lnum").val(lnum);
+				
+				if(lnum!=null){
+					$("#searchForm").attr({
+		                "method":"post",
+		                "action":"/board/searchBoard.ldb"
+					});
+					$("#searchForm").submit();
+					
+				}else{
+					return false;
+				}
+			});
+			
 		});
 		</script>
 	</head>
 	<body>
 		<div class = "container" align="center">
 			<div>
+			<div id="bTit" align="center"><h2>게시글 상세보기</h2></div>	
 				<form id="searchForm" name="searchForm" method="post" class="table">
-					<input type="hidden" id="lnum" name="lnum" value=<%=bvo.getLnum() %>>
-					<table border="1" align="center" >
+					<input type="hidden" id="lnum" name="lnum" value=<%=lnum %>>
+					<table align="center" >
 						<tr>
 							<td><b>제목</b></td>
 							<td colspan="3"><%=bvo.getLtitle() %></td>
@@ -146,7 +161,7 @@
 							<td><b>아이디</b></td>
 							<td><%=bvo.getLid() %></td>
 							<td><b>비밀번호</b></td>
-							<td><input type="text" id="lpw" name="lpw"></td>
+							<td><input type="password" id="lpw" name="lpw"></td>
 						</tr>
 						<tr>
 							<td><b>작성일</b></td>
@@ -163,7 +178,7 @@
 	%>
 						<tr>
 							<td><b>이미지</b></td>
-							<td><img src="../<%=bvo.getLimage() %>" style="max-width:90%";></td>
+							<td colspan="3"><img src="../<%=bvo.getLimage() %>" style="max-width:90%";></td>
 						</tr>
 	<%
 					}
@@ -171,20 +186,46 @@
 					</table>
 				</form>
 			</div>
-			<div >
+			<br>
+			<div class="butIndex" align="right">
 				<input type="button" class="but" name="updateBut" id="updateBut" value="수정">
 				<input type="button" class="but" name="deleteBut" id="deleteBut" value="삭제">
 				<input type="button" class="but" name="selectBut" id="selectBut" value="전체목록">
 			</div>
 			<div>
 				<form id="indexWrite" name="indexBoard" method="get">
-					<table>
-						<tr>
-							<td>▲이전글 <input type=text id="beforeView" name="beforeView" value="" size="50"></td></tr>
-						<tr><td>▼다음글  <input type="text" id="afterView" name="afterView" value="" size="50"></td></tr>
+<%
+										
+					String preLtitle = null;
+					String nextLtitle = null;
+					if(bvo.getPreLtitle()==null){
+						preLtitle = "이전글이 존재하지 않습니다.";
+					}else{
+						preLtitle = bvo.getPreLtitle();
+					}
+					
+					if(bvo.getNextLtitle()==null){
+						nextLtitle = "다음글이 존재하지 않습니다.";
+					}else{
+						nextLtitle = bvo.getNextLtitle();
+					}
+
+%>
+					<table align="left">
+						<tr data="<%=bvo.getNextLnum() %>">
+							<td span class="movePre">▲ 다음글  : <%=nextLtitle %></td></tr>					
+						<tr data="<%=bvo.getPreLnum() %>">
+							<td span class="movePre" >▼ 이전글  : <%=preLtitle %></td></tr>
+
 					</table>
 				</form>
-			</div>	
+			</div>
+			
+			<br>
+			<br>
+			<br>
+			<br>
+			 <jsp:include page="replyBoard.jsp"></jsp:include>
 		</div>	
 	</body>
 </html>

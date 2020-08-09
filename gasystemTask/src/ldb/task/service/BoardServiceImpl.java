@@ -3,6 +3,7 @@ import java.util.List;
 
 import ldb.task.dao.BoardDao;
 import ldb.task.vo.BoardVO;
+import ldb.task.vo.ReplyVO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,7 +113,83 @@ public class BoardServiceImpl implements BoardService {
 		return aList;
 	}
 	
+	/********************************************************************/
 	
+	
+	@Override
+	public List<ReplyVO> selectReply(ReplyVO rvo) {
+		logger.info("(log)BoardServiceImpl.selectReply 진입");
+		List<ReplyVO> sList = null;
+		sList = boardDao.selectReply(rvo);
+		logger.info("(log)BoardServiceImpl.selectReply 종료");
+		return sList;
+	}
+
+	@Override
+	public boolean insertReply(ReplyVO rvo) {
+		logger.info("(log)BoardServiceImpl.insertReply 진입");
+		int iFlag = 0;
+		iFlag = boardDao.insertReply(rvo);
+		if(iFlag == 0){
+			logger.info("(log)BoardServiceImpl.insertReply 종료");
+			return false;
+		}else{
+			logger.info("(log)BoardServiceImpl.insertReply 종료");
+			return true;
+		}
+	}
+
+	@Override
+	public List<ReplyVO> cheabunReply(ReplyVO rvo) {
+		logger.info("(log)BoardServiceImpl.cheabunReply 진입");
+		
+		List<ReplyVO> aList = null;
+		aList = boardDao.cheabunReply(rvo);
+		logger.info("(log)BoardServiceImpl.cheabunReply 종료");
+		return aList;
+	}
+
+	@Override
+	public List<ReplyVO> searchReply(ReplyVO rvo) {
+		logger.info("(log)BoardServiceImpl.searchReply 진입");
+		
+		List<ReplyVO> sList = null;
+		sList = boardDao.searchReply(rvo);
+		
+		logger.info("(log)BoardServiceImpl.searchReply 종료");
+		return sList;
+	}
+
+	@Override
+	public boolean updateReply(ReplyVO rvo) {
+		logger.info("(log)BoardServiceImpl.updateReply 진입");
+		int iFlag = 0;
+		iFlag = boardDao.updateReply(rvo);
+		if(iFlag == 0){
+			logger.info("(log)BoardServiceImpl.updateReply 종료");
+			return false;
+		}else{
+			logger.info("(log)BoardServiceImpl.updateReply 종료");
+			return true;
+		}
+		
+	}
+
+	@Override
+	public boolean deleteReply(ReplyVO rvo) {
+		logger.info("(log)BoardServiceImpl.deleteReply 진입");
+		int iFlag = 0;
+		iFlag = boardDao.deleteReply(rvo);
+		if(iFlag == 0){
+			logger.info("(log)BoardServiceImpl.deleteReply 종료");
+			return false;
+		}else{
+			logger.info("(log)BoardServiceImpl.deleteReply 종료");
+			return true;
+		}
+		
+	}
+
 	
 	
 	
