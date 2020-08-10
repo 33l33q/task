@@ -1,6 +1,6 @@
 ### Spring Framework 기반 자유게시판
-: 로그인 및 회원 가입 없이 자유롭게 글을 작성할 수 있는 게시판
-: 게시글 및 댓글 CRUD
+- 로그인 및 회원 가입 없이 자유롭게 글을 작성할 수 있는 게시판
+- 게시글 및 댓글 CRUD
 
 ### 개발환경 
 jsp-api 2.0, Servlet api 3.2, HTML4, CSS3, jQuery, Ajax, JavaScript(ECMAScript3),
