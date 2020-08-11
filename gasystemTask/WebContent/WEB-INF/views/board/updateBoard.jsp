@@ -1,3 +1,4 @@
+<!-- updateBoard.jsp: 게시글 수정 페이지 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="ldb.task.controller.BoardController"%>
@@ -147,7 +148,7 @@
 				
 			});
 			
-			//목록버튼 클릭시
+			//전체목로 클릭시
 			$("#selectBut").click(function(){
 				 location.href="/board/selectBoard.ldb";
 			});
@@ -165,7 +166,8 @@
 		String lnum = (String)obj2;
 
 		bvo = aList.get(0);
-		
+		String limage = "";
+		limage = bvo.getLimage();
 %>
 	<body>
 		<div class ="contaner">
@@ -175,33 +177,32 @@
 					<input type="hidden" id="lnum" name="lnum" value="<%=lnum %>">
 					<table width="800px">
 						<tr>
-							<td><b>작성자</b></td>
+							<td width="150"><b>작성자</b></td>
 							<td colspan="3"><%=bvo.getLid() %></td>
 						</tr>
 						<tr>
 							<td><b>비밀번호</b></td>
-							<td><input type="password" name="lpw" id="lpw"  value=<%=bvo.getLpw() %>>
+							<td><input type="password" name="lpw" id="lpw"  value="<%=bvo.getLpw() %>">
 							<td><b>비밀번호 확인</b></td>
-							<td><input type="password" name="reLpw" id="reLpw" value=<%=bvo.getLpw() %>>
+							<td><input type="password" name="reLpw" id="reLpw" value="<%=bvo.getLpw() %>">
 						</tr>
 						<tr>
 							<td><b>제목</b></td>
-							<td colspan="3"><input type="text" name="ltitle" id="ltitle" class="ltitle" size="50" value=<%=bvo.getLtitle() %>></td>
+							<td colspan="3"><input type="text" name="ltitle" id="ltitle" class="ltitle" size="50" value="<%=bvo.getLtitle() %>"></td>
 						</tr>
 						<tr>
 							<td><b>내용</b></td>
-							<td colspan="3"><textarea rows="16" cols="80" name="lcontent" id="lcontent" class="lcontent" style="width:100%; min-width:500px; height:30em;" value=<%=bvo.getLcontent() %>></textarea></td>
+							<td colspan="3">
+							<textarea rows="16" cols="80" name="lcontent" id="lcontent" class="lcontent"  style="width:100%; min-width:500px; height:30em; color:black;"><%=bvo.getLcontent() %></textarea></td>
 						</tr>
 <%
-						String limage = "";
-						limage = bvo.getLimage();
 						if(limage != null){
 %>
 						<tr>
 							<td ><b>이미지</b></td>
 							<td colspan="3">
 							<img src="../<%=limage%>" style="max-width:90%;">
-							<input type="file" name="limage" id="limage" value=<%=limage%>>
+							<input type="file" id="limage" name="limage" value="<%=limage %>">
 							<input type="reset" value="취소"></td>
 						</tr>
 <%
@@ -217,9 +218,10 @@
 						}
 %>
 					</table>
-					<div align="right">
-						<input type="button" value="수정완료"  class="but" id="updateBut" name="updateBut">
+					<div class="butContaner" align="right">
+						<input type="button" value="수정"  class="but" id="updateBut" name="updateBut">
  						<input type="button" value="삭제"  class="but" id="deleteBut" name="deleteBut">
+ 						&nbsp;&nbsp;&nbsp;
  						<input type="button" value="목록"  class="but" id="selectBut" name="selectBut">
 					</div>
 				</form>

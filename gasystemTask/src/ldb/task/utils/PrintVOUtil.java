@@ -1,5 +1,5 @@
+/****** VO에 담긴 값을 한번에 출력해보는 클래스 *******/
 package ldb.task.utils;
-
 
 import ldb.task.vo.BoardVO;
 

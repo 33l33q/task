@@ -1,3 +1,4 @@
+<!-- searchBoard.jsp : 게시글 상세보기 기능 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="ldb.task.controller.BoardController"%>
@@ -27,7 +28,6 @@
 			
 			//수정 시 동작
 			$("#updateBut").click(function(){
-				alert("수정버튼");
 				var lnum = $("#lnum").val();
 				var lpw = $("#lpw").val();
 				
@@ -42,7 +42,6 @@
 			
 			//삭제 시 동작
 			$("#deleteBut").click(function(){
-				alert("삭제버튼");
 				var lnum = $("#lnum").val();
 				var lpw = $("#lpw").val();
 				
@@ -73,13 +72,11 @@
 	                dataType:"text",
 	                success:function(result){
 	                       if(result == "SUCCESS"){
-	                    	   alert("비밀번호 확인 성공");
                     	   $("#searchForm").attr({
            	                "method":"post",
            	                "action":"/board/moveToUpdate.ldb"
            					});
 	           				$("#searchForm").submit();
-
 
 	                       }else if(result == "FAIL"){
 	                    	   alert("수정할 권한이 없습니다.");
@@ -118,12 +115,13 @@
 	        				   $("#searchForm").submit();
 							
 	                       }else if(result == "FAIL"){
-                             alert("수정할 권한이 없습니다.");
+                             alert("오류발생, 비밀번호를 확인하세요");
                              return false;
 	                       }
 	                }
                  });
 			}
+			
 			
 			//이전글로 이동
 			$(".movePre").click(function(){
@@ -153,12 +151,12 @@
 					<input type="hidden" id="lnum" name="lnum" value=<%=lnum %>>
 					<table align="center" >
 						<tr>
-							<td><b>제목</b></td>
+							<td ><b>제목</b></td>
 							<td colspan="3"><%=bvo.getLtitle() %></td>
 						</tr>
 						<tr>
 						<tr>
-							<td><b>아이디</b></td>
+							<td><b>작성자</b></td>
 							<td><%=bvo.getLid() %></td>
 							<td><b>비밀번호</b></td>
 							<td><input type="password" id="lpw" name="lpw"></td>
@@ -187,36 +185,39 @@
 				</form>
 			</div>
 			<br>
-			<div class="butIndex" align="right">
+			<div class="butContaner" align="right">
 				<input type="button" class="but" name="updateBut" id="updateBut" value="수정">
 				<input type="button" class="but" name="deleteBut" id="deleteBut" value="삭제">
 				<input type="button" class="but" name="selectBut" id="selectBut" value="전체목록">
 			</div>
-			<div>
-				<form id="indexWrite" name="indexBoard" method="get">
 <%
-										
-					String preLtitle = null;
-					String nextLtitle = null;
-					if(bvo.getPreLtitle()==null){
-						preLtitle = "이전글이 존재하지 않습니다.";
-					}else{
-						preLtitle = bvo.getPreLtitle();
-					}
-					
-					if(bvo.getNextLtitle()==null){
-						nextLtitle = "다음글이 존재하지 않습니다.";
-					}else{
-						nextLtitle = bvo.getNextLtitle();
-					}
+			String preLtitle = null;
+			String nextLtitle = null;
+			if(bvo.getPreLtitle()==null){
+				preLtitle = "이전글이 존재하지 않습니다.";
+			}else{
+				preLtitle = bvo.getPreLtitle();
+			}
+			
+			if(bvo.getNextLtitle()==null){
+				nextLtitle = "다음글이 존재하지 않습니다.";
+			}else{
+				nextLtitle = bvo.getNextLtitle();
+			}
+			
 
 %>
-					<table align="left">
-						<tr data="<%=bvo.getNextLnum() %>">
-							<td span class="movePre">▲ 다음글  : <%=nextLtitle %></td></tr>					
-						<tr data="<%=bvo.getPreLnum() %>">
+			<br>
+			<br>
+			<div  align="center">
+				<form id="indexBoard" name="indexBoard" method="get">
+					<table class="indexBoard"  align="center">
+						<tbody>
+							<tr data="<%=bvo.getNextLnum() %>">
+								<td span class="movePre">▲ 다음글  : <%=nextLtitle %></td></tr>					
+							<tr data="<%=bvo.getPreLnum() %>">
 							<td span class="movePre" >▼ 이전글  : <%=preLtitle %></td></tr>
-
+						</tbody>
 					</table>
 				</form>
 			</div>

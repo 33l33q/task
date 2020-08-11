@@ -1,3 +1,4 @@
+/****** 검색 및 페이징을 위한 클래스 *******/
 package ldb.task.vo;
 
 public class UtilVO {
@@ -8,7 +9,7 @@ public class UtilVO {
 	
 	//페이징 VO
 	private int pageSize = 10;
-	private int groupSize = 5;
+	private int groupSize = 10;
 	private int curPage = 1;
 	
 	private int totalCount;

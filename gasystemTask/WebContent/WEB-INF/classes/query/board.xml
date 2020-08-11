@@ -41,13 +41,12 @@
 				) C
 		)
 		where	pageNo = #{curPage, jdbcType=VARCHAR}
-		
 	</select>
 	
 	<!-- 게시글 채번 -->
 	<select id="cheabunBoard" resultType="bvo">
-		SELECT  LPAD(NVL(MAX(SUBSTR(A.lnum,-4)),0)+1,'4','0')  lnum
-		FROM    ldb_task_board  A 
+		select  lpad(nvl(max(substr(A.lnum,-4)),0)+1,'4','0')  lnum
+		from    ldb_task_board  A 
 	</select>
 	
 	<!-- 글작성 -->
@@ -117,10 +116,10 @@
 	<!-- 글 삭제하기 -->
 	<update id="deleteBoard" parameterType="bvo">
 		update 	ldb_task_board A 
-		set		A.ldeleteYN	= 'N'.
-				lupdatedate	= to_char(sysdate,'yyyymmdd')
-		where	A.ldeleteYN	= 'Y'
-		and		A.lnum		= #{lnum, jdbcType=VARCHAR}
+		set		A.ldeleteYN		= 'N',
+				A.lupdatedate	= to_char(sysdate,'yyyymmdd')
+		where	A.ldeleteYN		= 'Y'
+		and		A.lnum			= #{lnum, jdbcType=VARCHAR}
 	</update>
 	
 	<!-- 비밀번호 확인하기 -->

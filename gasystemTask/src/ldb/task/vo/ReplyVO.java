@@ -1,7 +1,7 @@
+/****** 댓글 테이블 VO : l + re + 항목명 *******/
 package ldb.task.vo;
 
 public class ReplyVO extends BoardVO {
-
 	
 	private	String	lreNum;
 	private	String	lnum;

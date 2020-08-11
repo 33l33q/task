@@ -35,7 +35,7 @@ public class BoardController {
 	
 	Logger logger = Logger.getLogger(BoardController.class); //로그설정
 	
-	final static String ABSTRACT_PATH =  "C://Users//BEE//Desktop//gasystem_task//gasystemTask//WebContent//image";
+	final static String ABSTRACT_PATH =  "C://Users//BEE//gasystem_task//gasystemTask//WebContent//image";
 	final static String RELATIVE_PATH = "image//";
 	final static String BOARD_GUBUN = "B";
 	final static String REPLY_GUBUN = "R";
@@ -56,11 +56,11 @@ public class BoardController {
 		Paging.setPage(bvo, cPage, pageCtrl);
 	    
 		int totalCnt = 0;
+		/*-----------페이징----------*/
 		
 		List<BoardVO> selectBoard = null;
 		selectBoard = boardService.selectBoard(bvo);
 		
-		logger.info("갯수 출력하기 >>> " + selectBoard.get(0).getCntReply());
 		
 		if(selectBoard.size() != 0){
             totalCnt=selectBoard.get(0).getTotalCount();//쿼리 조회한 리스트의 0번 인덱스에 담긴 totalCount값을 받아서 
@@ -80,7 +80,7 @@ public class BoardController {
 	@RequestMapping("/moveToInsert")
 	public String moveToInsert(){
 		logger.info("(log)글쓰기 페이지로 이동");
-		String url = "insertBoard";
+		String url = "board/insertBoard";
 		return url;
 	}
 	
@@ -130,9 +130,9 @@ public class BoardController {
 		result = boardService.insertBoard(bvo);
 		
 		if(result){
-			url = "board/searchBoard.ldb?lnum="+bvo.getLnum();
+			url = "/board/searchBoard.ldb?lnum="+bvo.getLnum();
 		}else{
-			url = "board/selectBoard";
+			url = "/board/selectBoard";
 		}
 
 		return "redirect:" + url ;
@@ -220,9 +220,9 @@ public class BoardController {
 		result = boardService.deleteBoard(bvo);
 		
 		if(result){
-			url = "redirect:board/selectBoard.ldb";
+			url = "redirect:selectBoard.ldb";
 		}else{
-			url = "redirect:board/searchBoard.ldb?lnum=" + lnum;
+			url = "redirect:searchBoard.ldb?lnum=" + lnum;
 		}
 		
 		logger.info("(log)BoardController.deleteBoard 종료 >> ");
@@ -246,11 +246,11 @@ public class BoardController {
 		if(!searchList.isEmpty()){
 			model.addAttribute("searchList",searchList);
 			model.addAttribute("lnum", lnum);
-			url = "updateBoard";
+			url = "board/updateBoard";
 		}else{
 			message = "오류가 발생했습니다.";
 			model.addAttribute("message", message);
-			url = "redirect:searchBoard.ldb?lnum=" + lnum;
+			url = "redirect:board/searchBoard.ldb?lnum=" + lnum;
 		}
 		
 		return url;
@@ -261,10 +261,8 @@ public class BoardController {
 	public String updateBoard(@ModelAttribute BoardVO bvo, Model model, HttpServletRequest request){
 		logger.info("(log)BoardController.updateBoard 진입 >>> ");
 		String url = "";
-		String lnum = "";
-		lnum = bvo.getLnum();
-		logger.info("(log)lnum 확인 >>>" + lnum); 
-		
+		String limage = "";
+	
 		boolean result = false;
 		boolean bFlag = false;
 		
@@ -274,15 +272,13 @@ public class BoardController {
 		
 		if(bFlag){
 			Enumeration<String> en = fuu.getFileNames();
-			String limage = null;
 			if(en.hasMoreElements()){
 				limage = en.nextElement();
 			}
-			
-			if(limage == null)	bvo.setLimage("");
-			else if(limage != null) bvo.setLimage(RELATIVE_PATH+limage);
 
-			bvo.setLimage(bvo.getLimage());
+			if(limage == null)	bvo.setLimage("");
+			else if(limage != null) bvo.setLimage(limage);
+			
 			bvo.setLnum(fuu.getParameter("lnum"));
 			bvo.setLid(fuu.getParameter("lid"));
 			bvo.setLpw(fuu.getParameter("lpw"));
@@ -301,9 +297,9 @@ public class BoardController {
 		result = boardService.updateBoard(bvo);
 		
 		if(result){
-			url = "board/searchBoard.ldb?lnum="+lnum;
+			url = "/board/searchBoard.ldb?lnum="+bvo.getLnum();
 		}else{
-			url = "board/selectBoard.ldb";
+			url = "/board/selectBoard.ldb";
 		}
 
 		logger.info("(log)BoardController.updateBoard 종료 >>> ");
@@ -344,10 +340,10 @@ public class BoardController {
 		}
 		logger.info("(log)BoardController.insertReply 종료 >>> ");
 		return entity;
-	}//댓글 입력 종료
+	}
 	
 	
-	//댓글 목록
+	//댓글 목록 출력
 	@RequestMapping(value="/all/{lnum}.ldb")
 	@ResponseBody
 	public ResponseEntity<List<ReplyVO>> selectReply(@PathVariable("lnum") String lnum, ReplyVO rvo ){
@@ -368,9 +364,9 @@ public class BoardController {
 		
 		logger.info("(log)BoardController.selectReply 종료 >>> ");
 		return entity;
-	}//댓글 목록 출력하기
+	}
 	
-	
+	//댓글 수정
 	@RequestMapping("/update/{lreNum}.ldb")
 	public ResponseEntity<String> updateReply(@PathVariable("lreNum") String lreNum,  @RequestBody ReplyVO rvo){
 		logger.info("(log)BoardController.updateReply 진입 >>> ");
@@ -392,8 +388,9 @@ public class BoardController {
 		
 		logger.info("(log)BoardController.updateReply 종료 >>> ");
 		return entity;
-	}//댓글 수정
+	}
 	
+	//댓글 삭제
 	@RequestMapping("/delete/{lreNum}.ldb")
 	public ResponseEntity<String> deleteReply(@PathVariable("lreNum") String lreNum,  @RequestBody ReplyVO rvo){
 		logger.info("(log)BoardController.deleteReply 진입 >>> ");
@@ -415,7 +412,7 @@ public class BoardController {
 		
 		logger.info("(log)BoardController.deleteReply 종료 >>> ");
 		return entity;
-	}//댓글 수정	
+	}	
 
 	
 }//end of controller

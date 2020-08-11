@@ -1,3 +1,4 @@
+<!-- selectBoard.jsp :  게시글 전체 목록 출력 -->
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
 <%@ page import="ldb.task.controller.BoardController"%>
@@ -75,7 +76,21 @@
 			});
 			
 			$("#pageCtrl").change(function(){
-			    goPage(1);
+				
+				if(!$("#search").val()){
+			    	goPage(1);
+				}else if($("#search").val()){
+					var keyword = $("#keyword").val();
+					var search = $("#search").val();
+					
+					$("#page").val(page);
+					$("#goSearch").attr({
+						"method":"get",
+						"action":"/board/selectBoard.ldb"
+					});
+					$("#goSearch").submit();
+					
+				}
 			 });
 	         
 			function goPage(page){
@@ -100,8 +115,8 @@
 			<div>
 				<div id="bTit" align="center"><h2>게시판 전체 목록</h2></div>			
 				<%--==========================검색시작==========================--%>
-				<div id="selectSearch" class="selectSearch">
-	                 <form id="goSearch" name="goSearch" align ="left">
+				<div id="selectSearch" class="selectSearch" align ="left">
+	                 <form id="goSearch" name="goSearch" >
 	                       <table summary ="검색">
 	                          <colgroup>
 	                             <col width="70%"></col>
@@ -109,7 +124,7 @@
 	                          </colgroup>
 	                          <tr>
 	                             <td id="btd">
-	                                <label>검색조건</label>
+	                                <label><b>검색조건</b></label>
 	                                <select class="keyword" name="keyword"> 
 	                                   <option value="all">전체보기</option>
 	                                   <option value="ltitle">제목</option>
@@ -117,11 +132,11 @@
 	                                   <option value="lid">작성자</option>
 	                                </select>
 	                                <input type="text" name="search" id="search" placeholder="검색어를 입력하세요" />
-	                                <input type="button" class="button" style="width:40px" value="검색" name="keySearch" id="keySearch"/>
+	                                <input type="button" class="but" style="width:40px" value="검색" name="keySearch" id="keySearch"/>
 	                             </td>
 	                            <td id="std">
-	                                <select id="pageCtrl" name="pageCtrl">
-	                                   <option value="5">5줄</option>
+	                                <select id="pageCtrl" name="pageCtrl" selectes="10">
+	                                	<option value="5">5줄</option>
 	                                   <option value="10">10줄</option>
 	                                   <option value="20">20줄</option>
 	                                   <option value="30">30줄</option>
@@ -160,7 +175,7 @@
 				if(aList.size() == 0){
 %>
 						<tr>
-							<td colspan ="3" align="center">게시글이 존재하지 않습니다.</td>
+							<td colspan ="6" align="center">게시글이 존재하지 않습니다.</td>
 						</tr>
 <%
 				}else{
@@ -186,7 +201,7 @@
 				</form>
 			</div>
 			<br>
-			<div id="boardButton" align="right">
+			<div class="butContaner" align="right">
 				<input type="button" value="글작성" class="but" id="moveToInsert" name="moveToInsert">
 			</div>
 			<br><br><br>

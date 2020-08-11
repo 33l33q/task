@@ -1,3 +1,4 @@
+/****** 글 작성 및 수정 시 MultipartRequest를 거쳐가는 공통 클래스 *******/
 package ldb.task.utils;
 
 import java.util.Enumeration;

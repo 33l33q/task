@@ -1,3 +1,4 @@
+/****** 게시판 테이블 VO : l+항목  *******/
 package ldb.task.vo;
 
 public class BoardVO extends UtilVO {
@@ -20,7 +21,6 @@ public class BoardVO extends UtilVO {
 	private String preLtitle;
 	private	String nextLnum;
 	private String nextLtitle;
-	
 
 	//댓글 갯수
 	private String cntReply;

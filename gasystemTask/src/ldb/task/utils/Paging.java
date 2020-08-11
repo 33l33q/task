@@ -1,3 +1,4 @@
+/****** 페이징 클래스 *******/
 package ldb.task.utils;
 
 import ldb.task.vo.BoardVO;

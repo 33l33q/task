@@ -1,3 +1,4 @@
+<!-- insertBoard.jsp: 게시글 입력 페이지 -->
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -43,7 +44,7 @@
 				cut_100(this);
 			});
 			
-			$("#insertBoard").click(function() {
+			$("#insertBut").click(function() {
 
 				//필수값 validation
 		        var lcontent = oEditors.getById["lcontent"].getIR();
@@ -69,8 +70,6 @@
 				//비밀번호 일치 여부 확인하기
 				var lpwVal = $("#lpw").val();
 				var reLpwVal = $("#reLpw").val();
-				
-				alert(reLpwVal + " : " + lpwVal);
 				
 				if(!lpwVal){
 					alert("비밀번호를 입력하세요.");
@@ -100,10 +99,15 @@
 				
 				$("#insertForm").attr({
 					"method":"POST",
-					"action":"../board/insertBoard.ldb"
+					"action":"/board/insertBoard.ldb"
 				});
 				
 				$("#insertForm").submit();
+			});
+			
+			//목록버튼 클릭시
+			$("#selectBut").click(function(){
+				 location.href="/board/selectBoard.ldb";
 			});
 			
 			function getTextLength(str){
@@ -149,7 +153,7 @@
 				<form id="insertForm" name="insertForm" enctype="multipart/form-data">
 					<table width="800px" id="wirteForm">
 						<tr>
-							<td><b>작성자</b></td>
+							<td width="150" ><b>작성자</b></td>
 							<td colspan="3"><input type="text" name="lid" id="lid"></td>
 						</tr>
 						<tr>
@@ -171,8 +175,9 @@
 							<td colspan="3"><input type="file" name="limage" id="limage"><input type="reset" value="취소"></td></td>
 						</tr>
 					</table>
-					<div align="right">
-						<input type="button" value="저장"  class="but" id="insertBoard" name="insertBoard">
+					<div class="butContaner" align="right">
+						<input type="button" value="저장"  class="but" id="insertBut" name="insertBut">
+						<input type="button" value="목록"  class="but" id="selectBut" name="selectBut">
 					</div>
 				</form>
 			</div>

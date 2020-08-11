@@ -6,7 +6,6 @@ body {
 	background : white;
 	width:1280px;
 	height:500px;
-	font-family: "Noto Sans KR", sans-serif;
 	color : black;
 }
 
@@ -54,11 +53,14 @@ body {
 	border-top:1px solid #ddd;
 }
 
+.butContaner, .selectSearch {
+	width:80%;
+}
+
 .but {
-	font-family: 'Noto Sans KR', sans-serif;
-	background-color: rgb(29,79,137);
+	background-color: #aaa;
 	border: none;
-	color:#fff;
+	color: white;
 	padding: 6px 8px 6px 8px;
 	text-align: center;
 	text-decoration: none;
@@ -82,8 +84,16 @@ body {
 }
 
 
+.indexBoard{
+	width:80%;
+	/*width:900px;*/
+	height:auto;
+	border-top:3px solid #ddd;
+	border-bottom:3px solid #ddd;
+}
+
 .reply {
-	width:95%;	
+	width:80%;	
 	margin:0 auto;
 	padding : 0;
 	
@@ -92,7 +102,7 @@ body {
 }
 
 .reply_table {
-	width:90%;
+	width:80%;
 	border-top:3px solid #eeeeee;
 	border-bottom:3px solid #eeeeee;
 }

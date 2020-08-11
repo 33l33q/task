@@ -1,3 +1,4 @@
+<!-- replyBoard.jsp : 상세보기 페이지(searchBoard.jsp) 댓글 기능 -->
 <%@ page language="java" contentType="text/html; charset=EUC-KR"
     pageEncoding="EUC-KR"%>
 <%@ page import="ldb.task.controller.BoardController"%>
@@ -42,8 +43,6 @@
 	            var conText = $(this).parents("li").children().eq(1).html();
 	            var checkId = $(this).parents("p").children().eq(1).html();
 	            
-	            alert("checkId >>> " + checkId);
-	            
 	            $(this).parents("li").find("input[type='button']").hide();
 	            $(this).parents("li").children().eq(0).html();
 	            
@@ -53,10 +52,10 @@
 	            var
 	            data="<input type='password' id='checkPw' name='checkPw' placeholder='비밀번호를 입력하세요' style='float:left;'><br>";
 	            data+="<input type='hidden' id='checkId' name='checkId' value='" + checkId + "' style='float:left;'><br>";
-	            data+="<textarea name='conText' id='conText' cols=120' rows='3'>"+conText+"</textarea>";
-	            data+="&nbsp<input type='button' class='resetBut' value='취소' style='float:right;'>"
+	            data+="<textarea name='conText' id='conText' cols='100' rows='3'>"+conText+"</textarea>";
+	            data+="&nbsp<input type='button' class='resetBut'  value='취소' style='float:right;'>"
 	            data+="&nbsp<input type='button' class='upBut' value='수정' style='float:right;'>";
-	            data+="&nbsp<input type='button' class='delBut' value='삭제' style='float:right;'>";
+	            data+="&nbsp<input type='button' class='delBut'  value='삭제' style='float:right;'>";
 
 	            reArea.html(data);
 	            
@@ -72,7 +71,6 @@
 	         
 			//댓글 수정하기
 			$(document).on("click",".upBut",function(){
-				alert("비밀번호 받아오기 >>> : " + $("#checkPw").val());
 				var lreNum = $(this).parents("li").attr("data-num");
 				url = "/board/update/" + lreNum + ".ldb";
 				
@@ -106,7 +104,6 @@
 			
 			//댓글 삭제하기
 			$(document).on("click",".delBut",function(){
-				alert("삭제하기");
 				var lreNum = $(this).parents("li").attr("data-num");
 				url = "/board/delete/" + lreNum + ".ldb";
 				
@@ -129,9 +126,6 @@
 						}else if(result == "FAIL"){
 							alert("삭제 실패")
 						}
-					},
-					error : function(){
-						alert("시스템 오류 발생, 관리자에게 문의하세요")
 					}
 				})
 			});//삭제 종료
@@ -172,9 +166,6 @@
 							}else if(result == "FAIL"){
 								alert("댓글 등록에 실패했습니다.")
 							}
-						},
-						error : function(){
-							alert("시스템 오류 발생, 관리자에게 문의하세요")
 						}
 					});
 				}
@@ -233,7 +224,7 @@
 		   
 		         //수정하기 버튼
 		         var up_form = $("<input>");
-		         up_form.attr({"type" : "button", "value" : "수정/삭제", "class" : "button", "style" : "float:right;"});
+		         up_form.attr({"type" : "button", "value" : "수정/삭제", "class" : "but", "style" : "float:right;"});
 		         up_form.addClass("up_form");
 		         
 		         //비밀번호 저장
@@ -290,7 +281,7 @@
 						</tr>
 						<tr>
 							<td colspan="2"><textarea name="lreContent" id="lreContent" cols="100" rows="3"></textarea>
-							<input type="button" id="insertBut" name="insertBut" value="저장하기"></td>
+							<input type="button" id="insertBut" name="insertBut" class="but" value="저장하기"></td>
 						</tr>
 					</table>
 				</form>
